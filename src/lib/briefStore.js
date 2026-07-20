@@ -2,7 +2,7 @@
 // key gate. Every function is defensive: corrupted JSON or a full/unavailable
 // store (private mode, quota) degrades to in-memory state, never a crash.
 
-const STORAGE_KEY = 'scout-network:briefs';
+const STORAGE_KEY = 'matchpoint26:briefs';
 const MAX_BRIEFS = 20; // localStorage is ~5MB; a dossier is a few KB — 20 is safe headroom.
 
 function persist(list) {

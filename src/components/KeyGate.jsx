@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const STORAGE_KEY = 'scout-network:api-key';
+const STORAGE_KEY = 'matchpoint26:api-key';
 
 export function loadStoredKey() {
   try {

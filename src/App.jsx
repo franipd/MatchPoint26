@@ -143,7 +143,7 @@ export default function App() {
       <header className="masthead">
         <div>
           <div className="eyebrow">AGENTIC MATCH INTELLIGENCE · FIFA WORLD CUP 2026 FINAL</div>
-          <h1 className="title">THE SCOUT NETWORK</h1>
+          <h1 className="title">MATCHPOINT 26</h1>
           <p className="subtitle">
             One orchestrator. Three scouts with live web search. One chief scout that must
             reconcile, score and admit what it couldn&rsquo;t verify. Five real model calls —

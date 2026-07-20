@@ -1,9 +1,9 @@
 {
-  "name": "scout-network",
+  "name": "matchpoint26",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Multi-agent AI scouting network for the FIFA World Cup 2026 final — orchestrator-worker architecture with live web search. Bring your own Anthropic API key.",
+  "description": "MatchPoint26 — real-time agentic FIFA World Cup 2026 insights: scorecards, player stats, controversies, team analysis. Bring your own Anthropic API key.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
