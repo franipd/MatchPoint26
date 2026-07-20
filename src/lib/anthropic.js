@@ -4,7 +4,20 @@
 // CORS is enabled via Anthropic's explicit opt-in header for browser usage.
 
 const API_URL = 'https://api.anthropic.com/v1/messages';
-export const MODEL = 'claude-sonnet-4-6';
+
+// Two model tiers (see docs/architecture.md). Facts come from web searches,
+// so factual gathering runs on the cheap fast tier; judgment work — synthesis,
+// ranking, reconciling conflicting sources — runs on the strong tier.
+export const MODELS = {
+  GATHERER: 'claude-haiku-4-5',
+  ANALYST: 'claude-sonnet-5',
+};
+
+// Haiku 4.5 predates the dynamic-filtering web search tool; Sonnet 5 supports it.
+const SEARCH_TOOL_FOR_MODEL = {
+  [MODELS.GATHERER]: 'web_search_20250305',
+  [MODELS.ANALYST]: 'web_search_20260209',
+};
 
 export class ApiError extends Error {
   constructor(message, status) {
@@ -17,26 +30,31 @@ export class ApiError extends Error {
 /**
  * Make one Messages API call.
  * Returns { text, searchQueries, usage, latencyMs, stopReason }.
- * - text: all text blocks joined (search responses interleave tool blocks,
- *   so blocks are always filtered by type, never accessed by position).
+ * - text: all text blocks joined (search responses interleave text, tool and
+ *   thinking blocks, so blocks are always filtered by type, never by position).
  * - searchQueries: the actual web searches the model ran (server_tool_use blocks).
  */
 export async function callClaude({
   apiKey,
+  model = MODELS.ANALYST,
   system,
   messages,
   useSearch = false,
   maxSearches = 3,
-  maxTokens = 4000,
+  maxTokens = 8000,
   signal,
 }) {
   const started = performance.now();
 
-  const body = { model: MODEL, max_tokens: maxTokens, messages };
+  const body = { model, max_tokens: maxTokens, messages };
   if (system) body.system = system;
   if (useSearch) {
     body.tools = [
-      { type: 'web_search_20250305', name: 'web_search', max_uses: maxSearches },
+      {
+        type: SEARCH_TOOL_FOR_MODEL[model] || 'web_search_20250305',
+        name: 'web_search',
+        max_uses: maxSearches,
+      },
     ];
   }
 

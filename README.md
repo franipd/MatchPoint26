@@ -14,14 +14,19 @@ verify.
 - **The Briefing** — full pre-match dossier for the final: one Orchestrator
   agent confirms the matchup live, three Scout agents research in parallel,
   a Chief Scout synthesizes with confidence scores and flagged gaps.
-- **Match Center** *(planned)* — scorecards and results between countries
-  across the tournament.
-- **Player Hub** *(planned)* — the tournament's best players with stats:
-  goals this World Cup, career totals, key performances.
-- **Flashpoints** *(planned)* — controversies, verified against multiple
-  sources before they render.
-- **Team Analysis** *(planned)* — strengths, weaknesses, and tactical
-  data analysis per team.
+- **Match Center** — scorecards and results across the tournament, each
+  with a source and confidence score. Cached after the first run.
+- **Player Hub** — the tournament's standout players with stats (goals this
+  World Cup and career), researched per player in parallel and ranked by an
+  analyst that may only use the sourced data.
+- **Flashpoints** — controversies, rendered as "Verified" only when backed
+  by 2+ independent sources; otherwise labeled "Reported, unverified".
+- **Team Analysis** — the finalists' strengths and weaknesses, argued from
+  gathered match data with evidence cited on every point.
+
+All surfaces run on demand (you control what you spend), cache their results
+on your device, and run on a two-tier model architecture: `claude-haiku-4-5`
+gatherers with live web search, `claude-sonnet-5` analysts with no search.
 
 See [docs/architecture.md](docs/architecture.md) for the agent architecture
 and cost model, and [docs/prd.md](docs/prd.md) for the product requirements.

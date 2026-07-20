@@ -11,16 +11,8 @@
 //
 // Every stage is a real API call. Nothing about the match is hard-coded.
 
-import { callClaude, parseAgentJson } from './anthropic.js';
-
-const todayLine = () =>
-  `Today's date is ${new Date().toUTCString()}. Treat anything you already ` +
-  `"know" about this tournament as potentially stale — trust your searches.`;
-
-const JSON_RULES =
-  'Respond with ONLY a single valid JSON object. No markdown fences, no prose ' +
-  'before or after. All confidence values are numbers from 0 to 1, where a value ' +
-  'below 0.6 means you could not properly verify the point.';
+import { callClaude, parseAgentJson, MODELS } from './anthropic.js';
+import { todayLine, JSON_RULES } from './prompts.js';
 
 // ---------------------------------------------------------------- orchestrator
 
@@ -148,6 +140,7 @@ export async function runScoutNetwork({ apiKey, on, signal }) {
   const orchRes = await callClaude({
     apiKey,
     signal,
+    model: MODELS.ANALYST,
     system: ORCHESTRATOR_SYSTEM,
     messages: [{ role: 'user', content: orchestratorUserPrompt() }],
     useSearch: true,
@@ -177,6 +170,7 @@ export async function runScoutNetwork({ apiKey, on, signal }) {
     const res = await callClaude({
       apiKey,
       signal,
+      model: MODELS.GATHERER,
       system: SCOUT_SYSTEM,
       messages: [{ role: 'user', content: scoutUserPrompt(brief, plan.matchup) }],
       useSearch: true,
@@ -220,10 +214,11 @@ export async function runScoutNetwork({ apiKey, on, signal }) {
   const chiefRes = await callClaude({
     apiKey,
     signal,
+    model: MODELS.ANALYST,
     system: CHIEF_SYSTEM,
     messages: [{ role: 'user', content: chiefUserPrompt(plan.matchup, reports) }],
     useSearch: false,
-    maxTokens: 8000,
+    maxTokens: 16000,
   });
   track(chiefRes);
   const briefing = parseAgentJson(chiefRes.text);

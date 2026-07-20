@@ -8,14 +8,14 @@ a pure static site (Vite + React 18) with **no backend**; visitors bring
 their own Anthropic API key (BYOK), sent only to `api.anthropic.com` from
 the browser.
 
-Shipped today: **The Briefing** — orchestrator → 3 parallel scouts (live web
-search) → chief scout (synthesis only), 5 API calls, nothing hard-coded.
-
-Planned surfaces (see [docs/prd.md](docs/prd.md)): Match Center (scorecards),
-Player Hub (best players + stats), Flashpoints (verified controversies),
-Team Analysis (strengths + match data analysis). Agent design, model tiering,
-and the cost model live in [docs/architecture.md](docs/architecture.md) —
-read it before adding or changing any agent.
+Shipped surfaces (tabs): **Match Center** (scorecards), **Player Hub**
+(standout players + stats via parallel per-player gatherers), **Flashpoints**
+(controversies, ≥2-source verification), **Team Analysis** (strengths from
+data), and **The Briefing** (orchestrator → 3 parallel scouts → chief scout).
+Requirements live in [docs/prd.md](docs/prd.md). Agent design, model tiering
+(`claude-haiku-4-5` gatherers / `claude-sonnet-5` analysts), and the cost
+model live in [docs/architecture.md](docs/architecture.md) — read it before
+adding or changing any agent.
 
 ## Structure
 
@@ -31,10 +31,14 @@ MatchPoint26/
 │   ├── App.jsx              ← run state machine, wires everything together
 │   ├── styles.css           ← all styling (no CSS framework)
 │   ├── lib/
-│   │   ├── anthropic.js     ← browser-direct API client (callClaude, parseAgentJson)
+│   │   ├── anthropic.js     ← browser-direct API client (callClaude, MODELS, parseAgentJson)
 │   │   ├── agents.js        ← prompts + pipeline for the briefing agents
-│   │   └── briefStore.js    ← saved briefings in localStorage, defensive
+│   │   ├── surfaces.js      ← fan-surface registry, prompts + pipelines
+│   │   ├── briefStore.js    ← saved briefings in localStorage, defensive
+│   │   └── surfaceStore.js  ← cached surface results in localStorage, defensive
 │   └── components/
+│       ├── TabBar.jsx       ← accessible scrollable tab strip
+│       ├── SurfaceView.jsx  ← generic surface frame + per-surface renderers
 │       ├── KeyGate.jsx      ← API key entry (memory or opt-in localStorage)
 │       ├── AgentGraph.jsx   ← hand-rolled SVG agent graph
 │       ├── LogPanel.jsx     ← live run log

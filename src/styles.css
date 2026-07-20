@@ -363,3 +363,170 @@ body {
   .dossier-head, .dossier-section { animation: none; opacity: 1; }
   .deploy { transition: none; }
 }
+
+/* ── tab bar ───────────────────────────────────────────────────────────── */
+.tabbar {
+  display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid var(--line); margin-bottom: 18px; padding-bottom: 0;
+  scrollbar-width: none;
+}
+.tabbar::-webkit-scrollbar { display: none; }
+.tab {
+  appearance: none; background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--muted); cursor: pointer; white-space: nowrap;
+  font-family: var(--font-display); font-weight: 600; font-size: 17px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 10px 14px 12px; min-height: 44px;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+.tab:hover { color: var(--chalk); }
+.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px; }
+.tab-active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-badge { color: var(--ok); margin-left: 6px; font-size: 11px; vertical-align: middle; }
+
+/* ── surface frame ─────────────────────────────────────────────────────── */
+.surface { margin-bottom: 28px; }
+.surface-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.surface-title {
+  font-family: var(--font-display); font-weight: 700; font-size: 30px;
+  letter-spacing: 0.03em; text-transform: uppercase; margin: 0;
+}
+.surface-tagline { color: var(--muted); margin: 4px 0 0; }
+.surface-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.deploy-sm { font-size: 14px; padding: 10px 18px; }
+.cache-note {
+  font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+}
+.surface-idle {
+  background: var(--panel-2); border: 1px dashed var(--line); border-radius: 10px;
+  color: var(--muted); padding: 18px; margin: 0 0 8px;
+}
+.surface-running {
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px;
+  font-family: var(--font-mono); font-size: 12px; padding: 14px 16px; margin-bottom: 8px;
+}
+.surface-lede { color: var(--chalk); max-width: 760px; margin: 0 0 16px; }
+.retry {
+  background: none; border: 1px solid currentColor; border-radius: 6px;
+  color: inherit; cursor: pointer; font: inherit; padding: 2px 10px; margin-left: 8px;
+}
+.retry:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* ── shared claim metadata ─────────────────────────────────────────────── */
+.conf {
+  font-family: var(--font-mono); font-size: 10.5px; border-radius: 4px;
+  padding: 1px 6px; letter-spacing: 0.04em;
+}
+.conf-ok { color: var(--ok); border: 1px solid var(--ok); }
+.conf-warn { color: var(--warn); border: 1px solid var(--warn); }
+.conf-err { color: var(--err); border: 1px solid var(--err); }
+.sources { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.surface-gaps {
+  border: 1px solid var(--warn); border-radius: 10px; background: rgba(224, 164, 88, 0.07);
+  padding: 14px 18px; margin-top: 18px;
+}
+.surface-gaps h4 {
+  color: var(--warn); font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase; margin: 0 0 8px;
+}
+.surface-gaps ul { margin: 0; padding-left: 18px; color: var(--muted); }
+
+/* ── match center ──────────────────────────────────────────────────────── */
+.score-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px;
+}
+.score-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; transition: border-color 200ms ease;
+}
+.score-card:hover { border-color: rgba(242, 201, 76, 0.45); }
+.score-stage {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+}
+.score-line { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.score-team { font-family: var(--font-display); font-weight: 600; font-size: 19px; }
+.score-num {
+  font-family: var(--font-display); font-weight: 700; font-size: 24px; color: var(--accent);
+  white-space: nowrap;
+}
+.score-note { color: var(--muted); font-size: 13px; margin-top: 6px; }
+.score-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+/* ── player hub ────────────────────────────────────────────────────────── */
+.player-list { display: flex; flex-direction: column; gap: 10px; }
+.player-card {
+  display: flex; gap: 16px; align-items: flex-start;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 18px; transition: border-color 200ms ease;
+}
+.player-card:hover { border-color: rgba(242, 201, 76, 0.45); }
+.player-rank {
+  font-family: var(--font-display); font-weight: 700; font-size: 30px;
+  color: var(--accent); min-width: 36px; line-height: 1;
+}
+.player-main { flex: 1; min-width: 200px; }
+.player-name { font-family: var(--font-display); font-weight: 600; font-size: 20px; }
+.player-team { color: var(--muted); font-size: 14px; font-weight: 400; font-family: var(--font-body); }
+.player-verdict { color: var(--muted); font-size: 13.5px; margin-top: 4px; }
+.player-stats { display: flex; gap: 22px; flex-wrap: wrap; }
+.pstat { display: flex; flex-direction: column; min-width: 110px; }
+.pstat-num { font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1.1; }
+.pstat-label {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted);
+}
+.pstat-src { margin-top: 4px; }
+.single-source-note { color: var(--warn); font-size: 12.5px; margin: 12px 0 0; }
+
+/* ── flashpoints ───────────────────────────────────────────────────────── */
+.incident-list { display: flex; flex-direction: column; gap: 12px; }
+.incident {
+  background: var(--panel); border: 1px solid var(--line); border-left-width: 3px;
+  border-radius: 10px; padding: 14px 18px;
+}
+.incident-verified { border-left-color: var(--ok); }
+.incident-reported { border-left-color: var(--warn); }
+.incident-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.status-chip {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; border-radius: 4px; padding: 2px 8px;
+}
+.status-verified { color: var(--ok); border: 1px solid var(--ok); }
+.status-reported { color: var(--warn); border: 1px solid var(--warn); }
+.incident-title { font-family: var(--font-display); font-weight: 600; font-size: 19px; }
+.incident-date { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.incident-summary { margin: 8px 0 0; }
+.incident-why { color: var(--muted); font-size: 13.5px; margin: 6px 0 0; font-style: italic; }
+
+/* ── team analysis ─────────────────────────────────────────────────────── */
+.ta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.ta-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 18px 20px;
+}
+.ta-card h3 {
+  font-family: var(--font-display); font-weight: 700; font-size: 24px;
+  text-transform: uppercase; letter-spacing: 0.03em; margin: 0 0 4px;
+}
+.ta-record { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent); margin-bottom: 10px; }
+.ta-style { color: var(--muted); font-size: 14px; }
+.ta-card h4 {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted); margin: 14px 0 6px;
+}
+.ta-card ul { margin: 0; padding-left: 18px; }
+.ta-card li { margin-bottom: 6px; }
+.evidence { display: block; color: var(--muted); font-size: 12.5px; }
+
+/* ── responsiveness & motion ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .surface-head { flex-direction: column; }
+  .player-card { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

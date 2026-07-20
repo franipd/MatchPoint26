@@ -4,9 +4,13 @@ import AgentGraph from './components/AgentGraph.jsx';
 import LogPanel from './components/LogPanel.jsx';
 import Briefing from './components/Briefing.jsx';
 import SavedBriefs from './components/SavedBriefs.jsx';
+import TabBar from './components/TabBar.jsx';
+import SurfaceView from './components/SurfaceView.jsx';
 import { runScoutNetwork } from './lib/agents.js';
 import { loadBriefs, saveBrief, renameBrief, deleteBrief } from './lib/briefStore.js';
-import { MODEL } from './lib/anthropic.js';
+import { SURFACES } from './lib/surfaces.js';
+import { loadSurfaces, saveSurface, clearSurface } from './lib/surfaceStore.js';
+import { MODELS } from './lib/anthropic.js';
 
 const initialNodes = () => ({
   orchestrator: { kind: 'ORCHESTRATOR', title: 'Mission planner', subtitle: 'Confirms matchup · writes scout briefs', status: 'idle' },
@@ -25,8 +29,16 @@ const PHASE_COPY = {
   error: 'Run halted',
 };
 
+// Derived from the surface registry — adding a surface adds its tab.
+const TABS = [
+  ...SURFACES.map(({ id, label }) => ({ id, label })),
+  { id: 'briefing', label: 'The Briefing' },
+];
+
 export default function App() {
   const [apiKey, setApiKey] = useState(loadStoredKey);
+  const [activeTab, setActiveTab] = useState('matchCenter');
+  const [surfaceCache, setSurfaceCache] = useState(loadSurfaces);
   const [phase, setPhase] = useState('idle');
   const [nodes, setNodes] = useState(initialNodes);
   const [logEntries, setLogEntries] = useState([]);
@@ -42,6 +54,13 @@ export default function App() {
   }, []);
 
   const running = phase === 'planning' || phase === 'scouting' || phase === 'synthesizing';
+
+  // Read the store fresh on every write so a save never clobbers results
+  // cached by another browser tab (same pattern as saveBrief below), and keep
+  // the side effect out of a state updater (StrictMode double-invokes those).
+  const handleSurfaceResult = (id, result) =>
+    setSurfaceCache(saveSurface(id, result, loadSurfaces()));
+  const handleSurfaceClear = (id) => setSurfaceCache(clearSurface(id, loadSurfaces()));
 
   const deploy = async () => {
     if (!apiKey || running) return;
@@ -138,16 +157,18 @@ export default function App() {
     if (id === activeBriefId) setActiveBriefId(null);
   };
 
+  const activeSurface = SURFACES.find((s) => s.id === activeTab);
+
   return (
     <div className="app">
       <header className="masthead">
         <div>
-          <div className="eyebrow">AGENTIC MATCH INTELLIGENCE · FIFA WORLD CUP 2026 FINAL</div>
+          <div className="eyebrow">AGENTIC INSIGHTS · FIFA WORLD CUP 2026</div>
           <h1 className="title">MATCHPOINT 26</h1>
           <p className="subtitle">
-            One orchestrator. Three scouts with live web search. One chief scout that must
-            reconcile, score and admit what it couldn&rsquo;t verify. Five real model calls —
-            nothing about the match is hard-coded.
+            Scorecards, standout players, controversies and tactical reads — researched live by
+            AI agents with a source and a confidence score on every claim. Nothing is hard-coded;
+            what the agents couldn&rsquo;t verify is flagged, never bluffed.
           </p>
         </div>
         <div className="statbox" aria-live="polite">
@@ -176,44 +197,67 @@ export default function App() {
 
       <KeyGate apiKey={apiKey} onKeyChange={setApiKey} disabled={running} />
 
-      <div className="controls">
-        <button className="deploy" onClick={deploy} disabled={!apiKey || running}>
-          {running ? 'Network running…' : briefing ? 'Run the network again' : 'Deploy the network'}
-        </button>
-        {running && (
-          <button className="cancel" onClick={cancel}>
-            Abort run
-          </button>
-        )}
-        <span className={`phase phase-${phase}`}>{PHASE_COPY[phase]}</span>
-        <span className="model-tag">{MODEL} · web search enabled</span>
-      </div>
-
-      {error && (
-        <div className="error-banner" role="alert">
-          {error}
-        </div>
-      )}
-
-      <main className="stage">
-        <AgentGraph nodes={nodes} />
-        <LogPanel entries={logEntries} />
-      </main>
-
-      <SavedBriefs
-        briefs={savedBriefs}
-        activeId={activeBriefId}
-        disabled={running}
-        onOpen={openBrief}
-        onRename={handleRenameBrief}
-        onDelete={handleDeleteBrief}
+      <TabBar
+        tabs={TABS.map((t) => ({ ...t, badge: t.id !== 'briefing' && surfaceCache[t.id] ? '●' : null }))}
+        activeId={activeTab}
+        onSelect={setActiveTab}
       />
 
-      <Briefing briefing={briefing} />
+      {activeSurface && (
+        <SurfaceView
+          key={activeSurface.id}
+          surface={activeSurface}
+          apiKey={apiKey}
+          cached={surfaceCache[activeSurface.id]}
+          onResult={handleSurfaceResult}
+          onClear={handleSurfaceClear}
+        />
+      )}
+
+      {activeTab === 'briefing' && (
+        <section id="panel-briefing" role="tabpanel" aria-labelledby="tab-briefing">
+          <div className="controls">
+            <button className="deploy" onClick={deploy} disabled={!apiKey || running}>
+              {running ? 'Network running…' : briefing ? 'Run the network again' : 'Deploy the network'}
+            </button>
+            {running && (
+              <button className="cancel" onClick={cancel}>
+                Abort run
+              </button>
+            )}
+            <span className={`phase phase-${phase}`}>{PHASE_COPY[phase]}</span>
+            <span className="model-tag">
+              {MODELS.GATHERER} scouts · {MODELS.ANALYST} analysts · web search
+            </span>
+          </div>
+
+          {error && (
+            <div className="error-banner" role="alert">
+              {error}
+            </div>
+          )}
+
+          <main className="stage">
+            <AgentGraph nodes={nodes} />
+            <LogPanel entries={logEntries} />
+          </main>
+
+          <SavedBriefs
+            briefs={savedBriefs}
+            activeId={activeBriefId}
+            disabled={running}
+            onOpen={openBrief}
+            onRename={handleRenameBrief}
+            onDelete={handleDeleteBrief}
+          />
+
+          <Briefing briefing={briefing} />
+        </section>
+      )}
 
       <footer className="foot">
-        Orchestrator-worker architecture · every claim searched at run time and
-        confidence-scored · gaps flagged, never bluffed. Built on the Anthropic API,
+        Tiered agent architecture — cheap gatherers with live search, strong analysts that may
+        only use sourced data · every claim confidence-scored, gaps flagged, never bluffed ·
         bring-your-own-key: your key never leaves your browser except to api.anthropic.com.
       </footer>
     </div>
